@@ -1,0 +1,65 @@
+version: "3"
+
+services:
+  scylla-node1:
+    container_name: scylla-node1
+    image: scylladb/scylla:5.4.2
+    ports:
+      - "8000:8000"
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0 --alternator-port 8000  --alternator-write-isolation always
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+      - type: volume
+        source: scylla1
+        target: /var/lib/scylla
+        volume:
+          nocopy: true
+    networks:
+      web:
+
+  scylla-node2:
+    container_name: scylla-node2
+    image: scylladb/scylla:5.4.2
+    ports:
+      - "8001:8000"
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0 --alternator-port 8000  --alternator-write-isolation always
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+      - type: volume
+        source: scylla2
+        target: /var/lib/scylla
+        volume:
+          nocopy: true
+    networks:
+      web:
+
+  scylla-node3:
+    container_name: scylla-node3
+    image: scylladb/scylla:5.4.2
+    ports:
+      - "8002:8000"
+    restart: always
+    command: --seeds=scylla-node1,scylla-node2 --smp 1 --memory 750M --overprovisioned 1 --api-address 0.0.0.0 --alternator-port 8000  --alternator-write-isolation always
+    volumes:
+      - "./scylla/scylla.yaml:/etc/scylla/scylla.yaml"
+      - "./scylla/cassandra-rackdc.properties.dc1:/etc/scylla/cassandra-rackdc.properties"
+      - type: volume
+        source: scylla3
+        target: /var/lib/scylla
+        volume:
+          nocopy: true
+    networks:
+      web:
+
+networks:
+  web:
+    driver: bridge
+
+volumes:
+  scylla1:
+  scylla2:
+  scylla3:
